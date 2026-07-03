@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import RootLayout from './RootLayout.jsx'
-import About from './Pages/About.jsx'
+import Products from './Pages/Products.jsx'
 import Contact from './Components/HomeComponents/Contact.jsx'
 
 const router = createBrowserRouter([
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     Component: RootLayout,
     children: [
       { index: true, Component: Home },
-      { path: "about", Component: About },
+      { path: "Products", Component: Products },
       { path: "contact", Component: Contact },
         ],
       },

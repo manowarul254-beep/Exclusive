@@ -25,7 +25,7 @@ const Navbar = () => {
                 <ul className={`${show ? "block" : "hidden"} z-10 p-4 absolute lg:static bottom-[-129%] left-0 bg-black lg:bg-transparent w-full lg:w-max text-white lg:text-black lg:flex items-center gap-12 slide`}>
                     <li><NavLink to="/" end>Home</NavLink></li>
                     <li><NavLink to="/contact" end>Contact</NavLink></li>
-                    <li><NavLink to="/About" end>About</NavLink></li>                   
+                    <li><NavLink to="/products" end>About</NavLink></li>                   
                     <li>Sign Up</li>
                 </ul>
                 <div className='hidden lg:flex gap-6'>
