@@ -1,31 +1,71 @@
 import React from "react";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaHeart } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
-const Card = ({ imgSrc, title, price, discountPrice, ratings, percentage,showCart }) => {
+const Card = ({
+  id,
+  imgSrc,
+  title,
+  price,
+  discountPrice,
+  ratings,
+  percentage,
+  showCart,
+}) => {
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // cart ও wishlist-এ যে প্রোডাক্ট যাবে তার ডাটা
+  const product = {
+    id,
+    title,
+    price,
+    discountPrice,
+    ratings,
+    percentage,
+    imgSrc,
+    image: imgSrc,
+    thumbnail: imgSrc,
+  };
+
+  const liked = isInWishlist(id);
+
   return (
     <div className="w-67.5 group">
       <div className="relative">
         <div className="overflow-hidden relative">
-          <img src={imgSrc} alt="" />
-          
-          <button className="py-2 w-full bg-black font-medium text-white absolute -bottom-10.5 group-hover:bottom-0 left-0 duration-200 ease-linear">
+          <img src={imgSrc} alt={title} />
+
+          <button
+            onClick={() => addToCart(product)}
+            className="py-2 w-full bg-black font-medium text-white absolute -bottom-10.5 group-hover:bottom-0 left-0 duration-200 ease-linear"
+          >
             Add To Cart
           </button>
-        
         </div>
+
         <div className="flex justify-between px-5 absolute top-5 left-0 w-full">
           <div>
             {percentage && (
-            <span className="py-1 px-4 bg-primary rounded-sm text-xs text-white">
-              -{percentage}%
-            </span>
+              <span className="py-1 px-4 bg-primary rounded-sm text-xs text-white">
+                -{percentage}%
+              </span>
             )}
           </div>
           <div className="space-y-2">
-            <div className="w-9 h-9 rounded-full bg-white flex justify-center items-center">
-              <CiHeart className="text-lg" />
+            {/* উইশলিস্ট হার্ট */}
+            <div
+              onClick={() => toggleWishlist(product)}
+              className="w-9 h-9 rounded-full bg-white flex justify-center items-center cursor-pointer"
+            >
+              {liked ? (
+                <FaHeart className="text-lg text-[#DB4444]" />
+              ) : (
+                <CiHeart className="text-lg" />
+              )}
             </div>
             <div className="w-9 h-9 rounded-full bg-white flex justify-center items-center">
               <IoEyeOutline className="text-lg" />
