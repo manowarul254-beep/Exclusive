@@ -4,7 +4,7 @@ import { Outlet } from 'react-router'
 import Footer from './Components/HomeComponents/Footer'
 import Header from '../src/Components/HomeComponents/Header'
 import ScrollToTop from './Components/CommonComponents/ScrollToTop'
-
+import PageReveal from './Components/CommonComponents/PageReveal'
 
 const RootLayout = () => {
   return (
@@ -12,7 +12,9 @@ const RootLayout = () => {
       <ScrollToTop/>
       <Header/>
       <Navbar/>
-      <Outlet/>
+      <PageReveal>
+        <Outlet/>
+      </PageReveal>
       <Footer/>
     </div>
   )
