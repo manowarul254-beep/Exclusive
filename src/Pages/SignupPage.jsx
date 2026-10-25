@@ -44,7 +44,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 items-center gap-10 lg:gap-0 pb-20">
+    <div className="grid lg:grid-cols-2 items-center gap-10 lg:gap-0 pb-20 mt-15">
       {/* বাঁ পাশের ছবি */}
       <div className="hidden lg:block">
         <img

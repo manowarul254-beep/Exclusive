@@ -5,6 +5,7 @@ import { LuSearch, LuUser } from "react-icons/lu";
 import { useWishlist } from "../../context/WishlistContext";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import SearchBox from "../CommonComponents/SearchBox";
 import {
   IoCartOutline,
   IoHeartOutline,
@@ -12,113 +13,146 @@ import {
   IoCloseCircleOutline,
   IoStarOutline,
   IoLogOutOutline,
+  IoClose,
 } from "react-icons/io5";
 import { AiOutlineBars } from "react-icons/ai";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
+// পেজের লিংক এক জায়গায়
+const navLinks = [
+  { label: "Home", to: "/" },
+  { label: "Contact", to: "/contact" },
+  { label: "About", to: "/products" },
+];
+
+// account মেনুর লিংক (ডেস্কটপ ড্রপডাউন আর মোবাইল মেনু দুটোতেই ব্যবহার হবে)
+const accountItems = [
+  { label: "Manage My Account", icon: LuUser, to: "/account" },
+  { label: "My Order", icon: IoBagHandleOutline },
+  { label: "My Cancellations", icon: IoCloseCircleOutline },
+  { label: "My Reviews", icon: IoStarOutline },
+];
+
 const Navbar = () => {
   const [show, setShow] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const navRef = useRef(null);
+  const dropdownRef = useRef(null);
+
   const hideIconsOn = ["/signuppage", "/login"];
   const isSignupPage = hideIconsOn.includes(location.pathname.toLowerCase());
 
-  // login অবস্থা AuthContext থেকে আসছে
   const { currentUser, logout } = useAuth();
   const isLoggedIn = !!currentUser;
 
-  // উইশলিস্ট ও কার্টের ডাটা
   const { wishlist } = useWishlist();
   const { cart } = useCart();
   const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
-  const navigate = useNavigate();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef(null);
+  // পেজ বদলালে মেনু নিজে থেকে বন্ধ হবে
+  useEffect(() => {
+    setShow(false);
+    setShowDropdown(false);
+  }, [location.pathname]);
 
-  // ড্রপডাউনের বাইরে ক্লিক করলে বন্ধ হবে
+  // মেনু বা ড্রপডাউনের বাইরে ক্লিক করলে বন্ধ হবে
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropdown(false);
+      }
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setShow(false);
       }
     };
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
+  const goTo = (path) => {
+    if (path) navigate(path);
+    setShow(false);
+    setShowDropdown(false);
+  };
+
   const handleLogout = () => {
     logout();
+    setShow(false);
     setShowDropdown(false);
     navigate("/login");
   };
 
+  // ডেস্কটপ লিংকে বর্তমান পেজ লাল দেখাবে
+  const desktopLinkClass = ({ isActive }) =>
+    isActive ? "text-[#DB4444]" : "";
+
+  // মোবাইল মেনুর লিংক
+  const mobileLinkClass = ({ isActive }) =>
+    `block py-3 border-b border-gray-100 transition-colors duration-200 ${
+      isActive ? "text-[#DB4444] font-medium" : "text-black"
+    }`;
+
+  const badgeClass =
+    "absolute -top-1 -right-2 w-4.5 h-4.5 bg-[#DB4444] text-white text-[10px] font-bold rounded-full flex items-center justify-center";
+
   return (
     <div className="border-b">
       <Container className="px-0">
-        <nav className="flex items-center justify-between py-7 relative">
-          <div className="pl-2 lg:pl-0">
-            <img src={logo} alt="" />
-          </div>
-          <ul
-            className={`${show ? "block" : "hidden"} z-10 p-4 absolute lg:static bottom-[-129%] left-0 bg-black lg:bg-transparent w-full lg:w-max text-white lg:text-black lg:flex items-center gap-12 slide`}
-          >
-            <li>
-              <NavLink to="/" end>
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact" end>
-                Contact
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/products" end>
-                About
-              </NavLink>
-            </li>
+        <nav
+          ref={navRef}
+          className="flex items-center justify-between py-4 lg:py-7 relative px-2.5 lg:px-0"
+        >
+          {/* লোগো */}
+          <NavLink to="/" className="shrink-0">
+            <img src={logo} alt="Exclusive" className="h-6 sm:h-7 lg:h-auto w-auto" />
+          </NavLink>
+
+          {/* ডেস্কটপ মেনু */}
+          <ul className="hidden lg:flex items-center gap-12 slide">
+            {navLinks.map((link) => (
+              <li key={link.to}>
+                <NavLink to={link.to} end className={desktopLinkClass}>
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
             {!isLoggedIn && (
               <li>
-                <NavLink to="/SignupPage" end>
+                <NavLink to="/SignupPage" end className={desktopLinkClass}>
                   Sign Up
                 </NavLink>
               </li>
             )}
           </ul>
-          <div className="hidden lg:flex gap-6">
-            <div className="w-60.75 bg-[#F5F5F5] relative items-center">
-              <input
-                type="text"
-                placeholder="What are you looking for?"
-                className="py-1.75 pl-5 w-60.75 outline-0"
-              />
-              <LuSearch className="absolute top-2 right-0 text-2xl" />
-            </div>
+
+          {/* ডান দিক: সার্চ, আইকন, hamburger */}
+          <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
+            {/* সার্চ বক্স শুধু ডেস্কটপে */}
+            <SearchBox className="hidden lg:block w-60.75" />
+
             {!isSignupPage && (
-              <div className="hidden lg:flex items-center gap-4">
-                {/* উইশলিস্ট হার্ট আইকন এবং কাউন্টার */}
+              <div className="flex items-center gap-3 sm:gap-4">
+                {/* উইশলিস্ট */}
                 <NavLink to="/wishlist" className="relative block">
-                  <IoHeartOutline className="text-3xl" />
+                  <IoHeartOutline className="text-2xl lg:text-3xl" />
                   {wishlist.length > 0 && (
-                    <span className="absolute -top-1 -right-2 w-4.5 h-4.5 bg-[#DB4444] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {wishlist.length}
-                    </span>
+                    <span className={badgeClass}>{wishlist.length}</span>
                   )}
                 </NavLink>
 
-                {/* কার্ট আইকন এবং কাউন্টার */}
+                {/* কার্ট */}
                 <NavLink to="/cart" className="relative block">
-                  <IoCartOutline className="text-3xl" />
+                  <IoCartOutline className="text-2xl lg:text-3xl" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-2 w-4.5 h-4.5 bg-[#DB4444] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {cartCount}
-                    </span>
+                    <span className={badgeClass}>{cartCount}</span>
                   )}
                 </NavLink>
 
-                {/* প্রোফাইল ড্রপডাউন */}
+                {/* প্রোফাইল ড্রপডাউন শুধু ডেস্কটপে */}
                 {isLoggedIn && (
-                  <div className="relative" ref={dropdownRef}>
+                  <div className="relative hidden lg:block" ref={dropdownRef}>
                     <div
                       onClick={() => setShowDropdown(!showDropdown)}
                       className={`w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-[#DB4444] hover:text-white ${
@@ -132,25 +166,18 @@ const Navbar = () => {
 
                     {showDropdown && (
                       <ul className="absolute right-0 top-12 z-20 w-56 grid gap-4 p-5 rounded-sm text-white text-sm bg-linear-to-br from-[#6b4a7a] via-[#2b2b2b] to-black backdrop-blur-md">
-                        <li
-                          onClick={() => {
-                            navigate("/account");
-                            setShowDropdown(false);
-                          }}
-                          className="flex items-center gap-4 cursor-pointer hover:opacity-70"
-                        >
-                          <LuUser className="text-2xl" /> Manage My Account
-                        </li>
-                        <li className="flex items-center gap-4 cursor-pointer hover:opacity-70">
-                          <IoBagHandleOutline className="text-2xl" /> My Order
-                        </li>
-                        <li className="flex items-center gap-4 cursor-pointer hover:opacity-70">
-                          <IoCloseCircleOutline className="text-2xl" /> My
-                          Cancellations
-                        </li>
-                        <li className="flex items-center gap-4 cursor-pointer hover:opacity-70">
-                          <IoStarOutline className="text-2xl" /> My Reviews
-                        </li>
+                        {accountItems.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <li
+                              key={item.label}
+                              onClick={() => goTo(item.to)}
+                              className="flex items-center gap-4 cursor-pointer hover:opacity-70"
+                            >
+                              <Icon className="text-2xl" /> {item.label}
+                            </li>
+                          );
+                        })}
                         <li
                           onClick={handleLogout}
                           className="flex items-center gap-4 cursor-pointer hover:opacity-70"
@@ -163,11 +190,98 @@ const Navbar = () => {
                 )}
               </div>
             )}
+
+            {/* hamburger / বন্ধ করার বাটন */}
+            <button
+              onClick={() => setShow(!show)}
+              aria-label="Menu"
+              className="lg:hidden cursor-pointer"
+            >
+              {show ? (
+                <IoClose className="text-3xl" />
+              ) : (
+                <AiOutlineBars className="text-2xl" />
+              )}
+            </button>
           </div>
-          <AiOutlineBars
-            onClick={() => setShow(!show)}
-            className="lg:hidden block text-2xl pr-2 lg:pr-0"
-          />
+
+          {/* মোবাইল ও ট্যাবলেটের মেনু কার্ড */}
+          <div
+            className={`lg:hidden absolute top-full left-0 w-full z-30 transition-all duration-300 ${
+              show
+                ? "opacity-100 translate-y-0 visible"
+                : "opacity-0 -translate-y-2 invisible"
+            }`}
+          >
+            <div className="mx-2.5 mt-1 max-h-[75vh] overflow-y-auto bg-white rounded-md border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-5">
+              {/* সার্চ */}
+              <SearchBox onDone={() => setShow(false)} />
+
+              {/* পেজের লিংক */}
+              <ul className="mt-3">
+                {navLinks.map((link) => (
+                  <li key={link.to}>
+                    <NavLink to={link.to} end className={mobileLinkClass}>
+                      {link.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+
+              {/* login অবস্থা অনুযায়ী নিচের অংশ */}
+              {isLoggedIn ? (
+                <div className="mt-4">
+                  <div className="flex items-center gap-3 pb-3">
+                    <div className="w-10 h-10 rounded-full bg-[#DB4444] text-white flex items-center justify-center font-semibold">
+                      {currentUser?.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{currentUser?.name}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {currentUser?.identifier}
+                      </p>
+                    </div>
+                  </div>
+
+                  <ul className="grid">
+                    {accountItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <li
+                          key={item.label}
+                          onClick={() => goTo(item.to)}
+                          className="flex items-center gap-3 py-2.5 text-sm cursor-pointer hover:text-[#DB4444] transition-colors duration-200"
+                        >
+                          <Icon className="text-xl" /> {item.label}
+                        </li>
+                      );
+                    })}
+                    <li
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 py-2.5 text-sm text-[#DB4444] cursor-pointer"
+                    >
+                      <IoLogOutOutline className="text-xl" /> Logout
+                    </li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <button
+                    onClick={() => goTo("/login")}
+                    className="py-2.5 border border-gray-400 rounded-sm text-sm font-medium cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={() => goTo("/SignupPage")}
+                    className="py-2.5 bg-[#DB4444] text-white rounded-sm text-sm font-medium cursor-pointer hover:bg-red-600 transition-colors duration-200"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </nav>
       </Container>
     </div>

@@ -10,11 +10,12 @@ import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import Btn from "../CommonComponents/Btn";
 
+// তীর বাটন ট্যাবলেট থেকে দেখাবে, মোবাইলে swipe করেই চলবে
 function SampleNextArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="hidden absolute -top-17.5 right-4 w-11.5 h-11.5 bg-[#F5F5F5] lg:flex justify-center items-center rounded-full"
+      className="hidden absolute -top-17.5 right-0 lg:right-4 w-11.5 h-11.5 bg-[#F5F5F5] md:flex justify-center items-center rounded-full cursor-pointer"
       onClick={onClick}
     >
       <FaArrowRight className="text-2xl text-black" />
@@ -26,7 +27,7 @@ function SamplePrevArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="hidden absolute -top-17.5 right-15 w-11.5 h-11.5 bg-[#F5F5F5] lg:flex justify-center items-center rounded-full mr-2"
+      className="hidden absolute -top-17.5 right-14 lg:right-15 w-11.5 h-11.5 bg-[#F5F5F5] md:flex justify-center items-center rounded-full cursor-pointer"
       onClick={onClick}
     >
       <FaArrowLeft className="text-2xl text-black" />
@@ -43,7 +44,6 @@ const FlashSale = () => {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        // limit=0 দিলে API-র সবগুলো প্রোডাক্ট আসে
         const res = await axios.get("https://dummyjson.com/products?limit=0");
         setProducts(res.data.products);
       } catch (err) {
@@ -65,23 +65,23 @@ const FlashSale = () => {
     prevArrow: <SamplePrevArrow />,
     responsive: [
       {
+        // ট্যাবলেট ও ছোট ল্যাপটপ
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-          dots: true,
+          slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 600,
+        // বড় মোবাইল
+        breakpoint: 768,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2,
+          slidesToScroll: 1,
         },
       },
       {
+        // ছোট মোবাইল
         breakpoint: 480,
         settings: {
           slidesToShow: 1,
@@ -94,12 +94,14 @@ const FlashSale = () => {
   return (
     <div className="my-10 lg:my-38.5">
       <Container>
-        <div className="flex gap-22 items-end">
+        {/* হেডার: ছোট screen-এ countdown নিচে নামবে */}
+        <div className="flex flex-wrap gap-6 lg:gap-22 items-end">
           <SecHead title="Today’s" heading="Flash Sales" />
           <CountDown />
         </div>
 
-        <div className="mt-10 flex justify-between">
+        {/* min-w-0 না দিলে slider পাশে ফুলে বেরিয়ে যায় */}
+        <div className="mt-10 md:mt-16 w-full min-w-0">
           {loading ? (
             <p className="w-full text-center py-20 text-gray-500">
               লোড হচ্ছে...
@@ -107,16 +109,15 @@ const FlashSale = () => {
           ) : error ? (
             <p className="w-full text-center py-20 text-[#DB4444]">{error}</p>
           ) : (
-            <Slider {...settings} className="w-full text-center mx-auto ">
+            <Slider {...settings} className="w-full text-center mx-auto">
               {products.map((item) => {
-                // API-তে ছাড়ের আগের দাম নেই, তাই হিসাব করে বের করা হচ্ছে
                 const originalPrice = (
                   item.price /
                   (1 - item.discountPercentage / 100)
                 ).toFixed(2);
 
                 return (
-                  <div key={item.id}>
+                  <div key={item.id} className="px-2 sm:px-3">
                     <Card
                       id={item.id}
                       imgSrc={item.thumbnail}

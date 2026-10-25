@@ -29,23 +29,24 @@ const ProductsCard = ({ product, type = "default", onRemove }) => {
   };
 
   return (
-    <div className="w-67.5 group">
+    <div className="w-full max-w-67.5 mx-auto group">
       <div className="relative">
         <div className="overflow-hidden relative bg-[#F5F5F5]">
-          <img src={thumbnail} alt={title} />
+          <img src={thumbnail} alt={title} className="w-full" />
 
+          {/* মোবাইলে সবসময় দেখাবে, ডেস্কটপে hover করলে ওপরে উঠবে */}
           <button
             onClick={() => requireLogin(() => addToCart(product))}
-            className="py-2 w-full bg-black font-medium text-white absolute -bottom-10.5 group-hover:bottom-0 left-0 duration-200 ease-linear flex items-center justify-center gap-2 cursor-pointer"
+            className="py-2 w-full bg-black font-medium text-white text-sm lg:text-base absolute bottom-0 lg:-bottom-10.5 lg:group-hover:bottom-0 left-0 duration-200 ease-linear flex items-center justify-center gap-2 cursor-pointer"
           >
-            <IoCartOutline className="text-xl" />
+            <IoCartOutline className="text-lg lg:text-xl" />
             Add To Cart
           </button>
         </div>
 
-        <div className="flex justify-between px-3 absolute top-3 left-0 w-full">
+        <div className="flex justify-between px-2 lg:px-3 absolute top-2 lg:top-3 left-0 w-full">
           <div>
-            <span className="py-1 px-3 bg-primary rounded-sm text-xs text-white">
+            <span className="py-1 px-2 lg:px-3 bg-primary rounded-sm text-xs text-white">
               -{discount}%
             </span>
           </div>
@@ -85,14 +86,16 @@ const ProductsCard = ({ product, type = "default", onRemove }) => {
         </div>
       </div>
 
-      <h3 className="mt-4 text-start line-clamp-1">{title}</h3>
-      <div className="flex gap-3 my-2">
+      <h3 className="mt-4 text-start line-clamp-1 text-sm lg:text-base">
+        {title}
+      </h3>
+      <div className="flex gap-3 my-2 text-sm lg:text-base">
         <h4 className="text-primary">${price}</h4>
         <h4 className="text-[#424040] line-through">${originalPrice}</h4>
       </div>
 
       {type !== "wishlist" && (
-        <div className="flex text-amber-300 items-center gap-1">
+        <div className="flex flex-wrap text-amber-300 items-center gap-1 text-sm lg:text-base">
           {[...Array(5)].map((_, i) => (
             <FaStar
               key={i}
