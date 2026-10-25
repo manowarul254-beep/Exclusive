@@ -93,7 +93,7 @@ const Products = () => {
         <BreadCrumb className="mt-10 lg:mt-30 mb-6 lg:mb-10" />
       </Container>
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 lg:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 lg:gap-10 mb-10">
           <div className="pt-4 lg:pt-10 min-w-0">
             <h4 className="font-bold text-[20px] mb-2">Shop by Category</h4>
 

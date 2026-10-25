@@ -3,8 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Container from "../CommonComponents/Container";
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import banner from "../../assets/bannner.jpg";
 import { BiCategory } from "react-icons/bi";
@@ -37,6 +35,7 @@ const Banner = () => {
 
   var settings = {
     dots: true,
+    arrows: false, // ডিফল্ট তীর পর্দার বাইরে বেরিয়ে পেজ নাড়াচ্ছিল
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -99,7 +98,7 @@ const Banner = () => {
           </div>
 
           {/* ডান দিকের slider */}
-          <div className="flex-1 min-w-0 lg:ml-12.5 pb-6">
+          <div className="flex-1 min-w-0 overflow-hidden lg:ml-12.5 pb-6">
             <Slider {...settings} className="w-full text-center mx-auto">
               {[1, 2, 3, 4].map((n) => (
                 <div key={n}>

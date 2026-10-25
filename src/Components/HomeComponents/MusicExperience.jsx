@@ -59,11 +59,13 @@ const MusicExperience = () => {
               </div>
 
               <button
-  onClick={() => navigate("/products?category=mobile-accessories")}
-  className="mt-8 lg:mt-10 px-12 py-4 bg-[#00FF66] rounded-sm text-white font-medium cursor-pointer hover:opacity-90 transition-opacity duration-200"
->
-  Buy Now!
-</button>
+                onClick={() =>
+                  navigate("/products?category=mobile-accessories")
+                }
+                className="mt-8 lg:mt-10 px-12 py-4 bg-[#00FF66] rounded-sm text-white font-medium cursor-pointer hover:opacity-90 transition-opacity duration-200"
+              >
+                Buy Now!
+              </button>
             </div>
 
             {/* ডান দিকের ছবি */}
