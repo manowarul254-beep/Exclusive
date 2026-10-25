@@ -6,19 +6,18 @@ import Container from "../CommonComponents/Container";
 import CountDown from "../CommonComponents/CountDown";
 import Card from "../CommonComponents/Card";
 import Slider from "react-slick";
-import { FaArrowLeft } from "react-icons/fa";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Btn from "../CommonComponents/Btn";
 
-// তীর বাটন ট্যাবলেট থেকে দেখাবে, মোবাইলে swipe করেই চলবে
+// মোবাইলে কার্ডের দুই পাশে ছোট তীর, ট্যাবলেট থেকে হেডারের ডানে বড় তীর
 function SampleNextArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="hidden absolute -top-17.5 right-0 lg:right-4 w-11.5 h-11.5 bg-[#F5F5F5] md:flex justify-center items-center rounded-full cursor-pointer"
       onClick={onClick}
+      className="absolute z-10 top-1/3 right-1 w-8 h-8 bg-white shadow md:shadow-none md:bg-[#F5F5F5] md:w-11.5 md:h-11.5 md:-top-17.5 md:right-0 lg:right-4 flex justify-center items-center rounded-full cursor-pointer"
     >
-      <FaArrowRight className="text-2xl text-black" />
+      <FaArrowRight className="text-base md:text-2xl text-black" />
     </div>
   );
 }
@@ -27,10 +26,10 @@ function SamplePrevArrow(props) {
   const { onClick } = props;
   return (
     <div
-      className="hidden absolute -top-17.5 right-14 lg:right-15 w-11.5 h-11.5 bg-[#F5F5F5] md:flex justify-center items-center rounded-full cursor-pointer"
       onClick={onClick}
+      className="absolute z-10 top-1/3 left-1 w-8 h-8 bg-white shadow md:shadow-none md:bg-[#F5F5F5] md:w-11.5 md:h-11.5 md:left-auto md:-top-17.5 md:right-14 lg:right-15 flex justify-center items-center rounded-full cursor-pointer"
     >
-      <FaArrowLeft className="text-2xl text-black" />
+      <FaArrowLeft className="text-base md:text-2xl text-black" />
     </div>
   );
 }
@@ -44,7 +43,8 @@ const FlashSale = () => {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const res = await axios.get("https://dummyjson.com/products?limit=0");
+        // ফ্ল্যাশ সেলের জন্য ১২টিই যথেষ্ট
+        const res = await axios.get("https://dummyjson.com/products?limit=12");
         setProducts(res.data.products);
       } catch (err) {
         setError("প্রোডাক্ট লোড করা যায়নি, আবার চেষ্টা করুন");
@@ -55,53 +55,30 @@ const FlashSale = () => {
     getProducts();
   }, []);
 
-  var settings = {
+  const settings = {
     dots: false,
-    infinite: true,
+    infinite: products.length > 4,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
+    swipeToSlide: true,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     responsive: [
-      {
-        // ট্যাবলেট ও ছোট ল্যাপটপ
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        // বড় মোবাইল
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        // ছোট মোবাইল
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 3 } },
+      { breakpoint: 768, settings: { slidesToShow: 2 } },
     ],
   };
 
   return (
     <div className="my-10 lg:my-38.5">
       <Container>
-        {/* হেডার: ছোট screen-এ countdown নিচে নামবে */}
-        <div className="flex flex-wrap gap-6 lg:gap-22 items-end">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-22 items-start md:items-end">
           <SecHead title="Today’s" heading="Flash Sales" />
           <CountDown />
         </div>
 
-        {/* min-w-0 না দিলে slider পাশে ফুলে বেরিয়ে যায় */}
-        <div className="mt-10 md:mt-16 w-full min-w-0">
+        <div className="mt-10 md:mt-24 w-full min-w-0 overflow-hidden">
           {loading ? (
             <p className="w-full text-center py-20 text-gray-500">
               লোড হচ্ছে...
@@ -109,7 +86,7 @@ const FlashSale = () => {
           ) : error ? (
             <p className="w-full text-center py-20 text-[#DB4444]">{error}</p>
           ) : (
-            <Slider {...settings} className="w-full text-center mx-auto">
+            <Slider {...settings} key={products.length}>
               {products.map((item) => {
                 const originalPrice = (
                   item.price /
@@ -117,7 +94,7 @@ const FlashSale = () => {
                 ).toFixed(2);
 
                 return (
-                  <div key={item.id} className="px-2 sm:px-3">
+                  <div key={item.id} className="px-1.5 sm:px-3">
                     <Card
                       id={item.id}
                       imgSrc={item.thumbnail}
@@ -134,7 +111,9 @@ const FlashSale = () => {
           )}
         </div>
 
-        <Btn onClick={() => navigate("/products")}>View All Products</Btn>
+        <Btn onClick={() => navigate("/products")} className="mt-12">
+          View All Products
+        </Btn>
       </Container>
     </div>
   );

@@ -11,8 +11,6 @@ const CartPage = () => {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart } = useCart();
 
-  console.log(cart);
-
   // Update Cart চাপার আগ পর্যন্ত quantity এখানে জমা থাকবে
   const [quantities, setQuantities] = useState({});
   const [coupon, setCoupon] = useState("");
@@ -48,11 +46,13 @@ const CartPage = () => {
   if (cart.length === 0) {
     return (
       <Container>
-        <div className="py-20 text-center">
-          <h2 className="text-2xl font-medium mb-6">আপনার কার্ট খালি</h2>
+        <div className="py-20 text-center px-4">
+          <h2 className="text-xl sm:text-2xl font-medium mb-6">
+            আপনার কার্ট খালি
+          </h2>
           <Link
             to="/products"
-            className="inline-block bg-[#DB4444] text-white px-12 py-4 rounded-sm"
+            className="inline-block bg-[#DB4444] text-white px-8 sm:px-12 py-4 rounded-sm"
           >
             Return To Shop
           </Link>
@@ -63,9 +63,9 @@ const CartPage = () => {
 
   return (
     <Container>
-      <div className="pt-20 pb-20">
-        {/* টেবিল হেডার */}
-        <div className="grid grid-cols-4 items-center px-10 py-6 shadow-[0_1px_13px_rgba(0,0,0,0.08)] rounded-sm">
+      <div className="pt-10 md:pt-20 pb-20">
+        {/* টেবিল হেডার: শুধু ট্যাবলেট ও বড় স্ক্রিনে */}
+        <div className="hidden md:grid grid-cols-4 items-center px-10 py-6 shadow-[0_1px_13px_rgba(0,0,0,0.08)] rounded-sm">
           <p>Product</p>
           <p>Price</p>
           <p>Quantity</p>
@@ -73,7 +73,7 @@ const CartPage = () => {
         </div>
 
         {/* প্রোডাক্টের সারি */}
-        <div className="grid gap-10 mt-10">
+        <div className="grid gap-6 md:gap-10 md:mt-10">
           {cart.map((item) => {
             const qty = getQty(item);
             const price = Number(item.price);
@@ -81,83 +81,106 @@ const CartPage = () => {
             return (
               <div
                 key={item.id}
-                className="grid grid-cols-4 items-center px-10 py-6 shadow-[0_1px_13px_rgba(0,0,0,0.08)] rounded-sm"
+                className="grid grid-cols-1 md:grid-cols-4 items-center gap-4 px-4 sm:px-6 md:px-10 py-5 md:py-6 shadow-[0_1px_13px_rgba(0,0,0,0.08)] rounded-sm"
               >
                 {/* ছবি, নাম ও রিমুভ বাটন */}
-                <div className="flex items-center gap-5">
-                  <div className="relative">
+                <div className="flex items-center gap-4 md:gap-5">
+                  <div className="relative shrink-0">
                     <img
                       src={item.imgSrc || item.thumbnail || item.image}
                       alt={item.title}
-                      className="w-12 h-12 object-contain"
+                      className="w-14 h-14 md:w-12 md:h-12 object-contain"
                     />
                     <button
+                      type="button"
                       onClick={() => removeFromCart(item.id)}
                       className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-[#DB4444] text-white flex items-center justify-center cursor-pointer"
                     >
                       <IoClose className="text-sm" />
                     </button>
                   </div>
-                  <p>{item.title}</p>
+                  <p className="line-clamp-2">{item.title}</p>
                 </div>
 
                 {/* দাম */}
-                <p>${fmt(price)}</p>
+                <div className="flex items-center justify-between md:block">
+                  <span className="md:hidden text-gray-500">Price:</span>
+                  <p>${fmt(price)}</p>
+                </div>
 
                 {/* Quantity বাটন */}
-                <div className="flex items-center justify-between w-18.5 h-11.5 px-3 border border-gray-400 rounded-sm">
-                  <span>{String(qty).padStart(2, "0")}</span>
-                  <div className="flex flex-col">
-                    <button onClick={() => changeQty(item.id, 1)}>
-                      <IoChevronUp className="text-sm" />
-                    </button>
-                    <button onClick={() => changeQty(item.id, -1)}>
-                      <IoChevronDown className="text-sm" />
-                    </button>
+                <div className="flex items-center justify-between md:block">
+                  <span className="md:hidden text-gray-500">Quantity:</span>
+                  <div className="flex items-center justify-between w-18.5 h-11.5 px-3 border border-gray-400 rounded-sm">
+                    <span>{String(qty).padStart(2, "0")}</span>
+                    <div className="flex flex-col">
+                      <button
+                        type="button"
+                        onClick={() => changeQty(item.id, 1)}
+                        className="cursor-pointer"
+                      >
+                        <IoChevronUp className="text-sm" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => changeQty(item.id, -1)}
+                        className="cursor-pointer"
+                      >
+                        <IoChevronDown className="text-sm" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
                 {/* Subtotal */}
-                <p className="text-right">${fmt(price * qty)}</p>
+                <div className="flex items-center justify-between md:block md:text-right">
+                  <span className="md:hidden text-gray-500">Subtotal:</span>
+                  <p>${fmt(price * qty)}</p>
+                </div>
               </div>
             );
           })}
         </div>
 
         {/* Return To Shop ও Update Cart */}
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mt-6">
           <button
+            type="button"
             onClick={() => navigate("/products")}
-            className="px-12 py-4 border border-gray-400 rounded-sm font-medium hover:bg-gray-100 duration-200"
+            className="px-8 sm:px-12 py-4 border border-gray-400 rounded-sm font-medium hover:bg-gray-100 duration-200 cursor-pointer"
           >
             Return To Shop
           </button>
           <button
+            type="button"
             onClick={handleUpdateCart}
-            className="px-12 py-4 border border-gray-400 rounded-sm font-medium hover:bg-gray-100 duration-200"
+            className="px-8 sm:px-12 py-4 border border-gray-400 rounded-sm font-medium hover:bg-gray-100 duration-200 cursor-pointer"
           >
             Update Cart
           </button>
         </div>
 
         {/* Coupon ও Cart Total */}
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-10 mt-20">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-start justify-between gap-10 mt-12 md:mt-20">
           {/* Coupon */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <input
               type="text"
               value={coupon}
               onChange={(e) => setCoupon(e.target.value)}
               placeholder="Coupon Code"
-              className="w-75 py-4 px-6 border border-black rounded-sm outline-0"
+              className="w-full sm:w-75 py-4 px-6 border border-black rounded-sm outline-0"
             />
-            <button className="px-12 py-4 bg-[#DB4444] text-white rounded-sm font-medium">
+            <button
+              type="button"
+              className="px-8 sm:px-12 py-4 bg-[#DB4444] text-white rounded-sm font-medium cursor-pointer"
+            >
               Apply Coupon
             </button>
           </div>
 
           {/* Cart Total */}
-          <div className="w-full lg:w-117.5 border border-black rounded-sm p-6">
+          <div className="w-full lg:w-117.5 border border-black rounded-sm p-5 sm:p-6">
             <h3 className="text-xl font-medium mb-6">Cart Total</h3>
 
             <div className="flex justify-between pb-4 border-b border-gray-400">
@@ -175,10 +198,11 @@ const CartPage = () => {
 
             <div className="flex justify-center mt-2">
               <button
+                type="button"
                 onClick={() => navigate("/checkout")}
-                className="px-12 py-4 bg-[#DB4444] text-white rounded-sm font-medium"
+                className="w-full sm:w-auto px-8 sm:px-12 py-4 bg-[#DB4444] text-white rounded-sm font-medium cursor-pointer"
               >
-                Procees to checkout
+                Proceed to checkout
               </button>
             </div>
           </div>

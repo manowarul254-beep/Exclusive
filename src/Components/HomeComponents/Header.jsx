@@ -1,27 +1,31 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Container from '../CommonComponents/Container'
-import { IoIosArrowDown } from "react-icons/io";
-
 
 const Header = () => {
   return (
     <div className='bg-black text-white py-3.75'>
-        <Container>
-            <div className='flex justify-between'>
-                <div>
-                    <p className='lg:pl-87 text-[#FAFAFA] lg:text-base text-xs'>Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!<a href="" className='font-semibold text-[14px] pl-2 border-b'>ShopNow</a></p>
-                </div>            
-                <div className=''>
-                  <select className='bg-black lg:text-base text-xs cursor-pointer' name="" id=""><IoIosArrowDown />
-                    <option value="">English</option>
-                    <option value="">English</option>
-                    <option value="">English</option>
-                    <option value="">English</option>
-                  </select>
-                   
-                </div>  
-            </div>    
-        </Container>
+      <Container>
+        <div className='flex items-center justify-between gap-3 px-2 lg:px-0'>
+          <p className='flex-1 text-[#FAFAFA] text-xs sm:text-sm lg:text-base text-center lg:pl-87'>
+            Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
+            <Link
+              to='/products'
+              className='font-semibold text-xs sm:text-sm lg:text-[14px] pl-2 border-b whitespace-nowrap'
+            >
+              ShopNow
+            </Link>
+          </p>
+
+          <select
+            className='shrink-0 bg-black text-xs sm:text-sm lg:text-base cursor-pointer outline-0'
+            defaultValue='en'
+          >
+            <option value='en'>English</option>
+            <option value='bn'>বাংলা</option>
+          </select>
+        </div>
+      </Container>
     </div>
   )
 }
