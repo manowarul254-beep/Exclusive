@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Container from "../CommonComponents/Container";
+import SearchBox from "../CommonComponents/SearchBox";
 import logo from "../../assets/Logo (3).png";
-import { LuSearch, LuUser } from "react-icons/lu";
+import { LuUser } from "react-icons/lu";
 import { useWishlist } from "../../context/WishlistContext";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
-import SearchBox from "../CommonComponents/SearchBox";
+import { useTheme } from "../../context/ThemeContext";
 import {
   IoCartOutline,
   IoHeartOutline,
@@ -14,6 +15,8 @@ import {
   IoStarOutline,
   IoLogOutOutline,
   IoClose,
+  IoMoonOutline,
+  IoSunnyOutline,
 } from "react-icons/io5";
 import { AiOutlineBars } from "react-icons/ai";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -46,6 +49,8 @@ const Navbar = () => {
 
   const { currentUser, logout } = useAuth();
   const isLoggedIn = !!currentUser;
+
+  const { theme, toggleTheme } = useTheme();
 
   const { wishlist } = useWishlist();
   const { cart } = useCart();
@@ -104,9 +109,13 @@ const Navbar = () => {
           ref={navRef}
           className="flex items-center justify-between py-4 lg:py-7 relative px-2.5 lg:px-0"
         >
-          {/* লোগো */}
+          {/* লোগো: dark mode-এ উল্টে সাদা হবে */}
           <NavLink to="/" className="shrink-0">
-            <img src={logo} alt="Exclusive" className="h-6 sm:h-7 lg:h-auto w-auto" />
+            <img
+              src={logo}
+              alt="Exclusive"
+              className="h-6 sm:h-7 lg:h-auto w-auto dark:invert"
+            />
           </NavLink>
 
           {/* ডেস্কটপ মেনু */}
@@ -127,10 +136,24 @@ const Navbar = () => {
             )}
           </ul>
 
-          {/* ডান দিক: সার্চ, আইকন, hamburger */}
+          {/* ডান দিক: সার্চ, theme বাটন, আইকন, hamburger */}
           <div className="flex items-center gap-3 sm:gap-5 lg:gap-6">
             {/* সার্চ বক্স শুধু ডেস্কটপে */}
             <SearchBox className="hidden lg:block w-60.75" />
+
+            {/* dark / light বাটন */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label="Toggle dark mode"
+              className="cursor-pointer"
+            >
+              {theme === "dark" ? (
+                <IoSunnyOutline className="text-2xl lg:text-3xl" />
+              ) : (
+                <IoMoonOutline className="text-2xl lg:text-3xl" />
+              )}
+            </button>
 
             {!isSignupPage && (
               <div className="flex items-center gap-3 sm:gap-4">
@@ -193,6 +216,7 @@ const Navbar = () => {
 
             {/* hamburger / বন্ধ করার বাটন */}
             <button
+              type="button"
               onClick={() => setShow(!show)}
               aria-label="Menu"
               className="lg:hidden cursor-pointer"
@@ -214,7 +238,7 @@ const Navbar = () => {
             }`}
           >
             <div className="mx-2.5 mt-1 max-h-[75vh] overflow-y-auto bg-white rounded-md border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.15)] p-5">
-              {/* সার্চ */}
+              {/* সার্চ: খোঁজার পর মেনু বন্ধ হবে */}
               <SearchBox onDone={() => setShow(false)} />
 
               {/* পেজের লিংক */}
@@ -236,7 +260,9 @@ const Navbar = () => {
                       {currentUser?.name?.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-medium truncate">{currentUser?.name}</p>
+                      <p className="font-medium truncate">
+                        {currentUser?.name}
+                      </p>
                       <p className="text-xs text-gray-500 truncate">
                         {currentUser?.identifier}
                       </p>
@@ -267,12 +293,14 @@ const Navbar = () => {
               ) : (
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   <button
+                    type="button"
                     onClick={() => goTo("/login")}
                     className="py-2.5 border border-gray-400 rounded-sm text-sm font-medium cursor-pointer hover:bg-gray-100 transition-colors duration-200"
                   >
                     Log in
                   </button>
                   <button
+                    type="button"
                     onClick={() => goTo("/SignupPage")}
                     className="py-2.5 bg-[#DB4444] text-white rounded-sm text-sm font-medium cursor-pointer hover:bg-red-600 transition-colors duration-200"
                   >

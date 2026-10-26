@@ -15,37 +15,42 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  // একটা প্রোডাক্ট কার্টে যোগ করা (product.quantity থাকলে সেই সংখ্যা, নইলে ১)
   const addToCart = (product) => {
+    const qty = Number(product.quantity) || 1;
+
     setCart((prev) => {
       const exists = prev.find((item) => same(item.id, product.id));
 
       if (exists) {
         return prev.map((item) =>
           same(item.id, product.id)
-            ? { ...item, quantity: (item.quantity || 1) + 1 }
+            ? { ...item, quantity: (item.quantity || 1) + qty }
             : item
         );
       }
 
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: qty }];
     });
   };
 
+  // অনেকগুলো প্রোডাক্ট একসাথে কার্টে যোগ করা (Move All To Bag এর জন্য)
   const addManyToCart = (products) => {
     setCart((prev) => {
       let updated = [...prev];
 
       products.forEach((product) => {
+        const qty = Number(product.quantity) || 1;
         const exists = updated.find((item) => same(item.id, product.id));
 
         if (exists) {
           updated = updated.map((item) =>
             same(item.id, product.id)
-              ? { ...item, quantity: (item.quantity || 1) + 1 }
+              ? { ...item, quantity: (item.quantity || 1) + qty }
               : item
           );
         } else {
-          updated.push({ ...product, quantity: 1 });
+          updated.push({ ...product, quantity: qty });
         }
       });
 
@@ -53,6 +58,7 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // নির্দিষ্ট প্রোডাক্টের quantity বদলানো
   const updateQuantity = (id, quantity) => {
     setCart((prev) =>
       prev.map((item) =>
